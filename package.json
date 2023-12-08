@@ -1,0 +1,18 @@
+{
+  "name": "@procube/cs-tools",
+  "version": "1.0.0",
+  "description": "CI/CD Tools for changesets",
+  "author": "Mitsuru Nakakawaji <mitsuru@procube.jp>",
+  "bin": {
+    "add-change": "cs/add.sh",
+    "start-pr": "cs/start-pr.sh",
+    "end-pr": "cs/end-pr.sh",
+    "push-pr": "cs/push-pr.sh"
+  },
+  "files": [
+    "cs/*",
+    "workflows/*"
+  ],
+  "license": "MIT",
+  "private": false
+}

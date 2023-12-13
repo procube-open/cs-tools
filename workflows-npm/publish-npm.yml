@@ -25,22 +25,7 @@ jobs:
       - name: Check if changeset is in prerelease mode
         id: check-in-pre
         run: echo "pre=$(test -r .changeset/pre.json; echo $?)"  >> "$GITHUB_OUTPUT"
-        - name: Get package name to be released
-        id: get-name
-        run: node -e "console.log('name=' + require('./package.json').name)" >> "$GITHUB_OUTPUT"
-      - name: Get version to be released
-        id: get-version
-        run: node -e "console.log('version=' + require('./package.json').version)" >> "$GITHUB_OUTPUT"
-      - name: Check if the image for the version is already pushed
-        id: versions
-        run: |
-          echo "versions=$(yarn info $NAME --json versions) >> "$GITHUB_OUTPUT"
-        env:
-          NAME: ${{ steps.get-name.outputs.name }}
       - name: Use Node.js ${{ matrix.node-version }}
-        if: >-
-          ${{steps.check-in-pre.outputs.pre == 0 &&
-          ! contains(fromJson(steps.versions.outputs.versions), steps.get-version.outputs.version)}}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
@@ -49,15 +34,31 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # Defaults to the user or organization that owns the workflow file
           # scope: '@YOUR-ORGANIZATION'
+      - name: Get package name to be released
+        id: get-name
+        run: node -e "console.log('name=' + require('./package.json').name)" >> "$GITHUB_OUTPUT"
+      - name: Get version to be released
+        id: get-version
+        run: node -e "console.log('version=' + require('./package.json').version)" >> "$GITHUB_OUTPUT"
+      - name: Check if the image for the version is already pushed
+        id: versions
+        run: |
+          echo "versions='$(yarn info $NAME --json versions)'" >> "$GITHUB_OUTPUT"
+        env:
+          NAME: ${{ steps.get-name.outputs.name }}
       - name: Publish npm package
         if: >-
           ${{steps.check-in-pre.outputs.pre == 0 &&
           ! contains(fromJson(steps.versions.outputs.versions), steps.get-version.outputs.version)}}
-        run: yarn publish
+        run: |
+          yarn install --immutable --immutable-cache --check-cache
+          yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Add Tag
         if: >-
           ${{steps.check-in-pre.outputs.pre == 0 &&
-          ! contains(fromJson(steps.versions.outputs.versions), steps.get-version.outputs.version)}}
+          ! contains(fromJson(steps.versions.outputs.versions).data, steps.get-version.outputs.version)}}
         run: |
           git tag v${VERSION}
           git push --tags origin v${VERSION}

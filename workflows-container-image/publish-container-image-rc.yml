@@ -1,4 +1,4 @@
-name: Label and Publish RC for Pull Request
+name: Publish RC for Pull Request
 
 on: 
   pull_request:
@@ -12,7 +12,7 @@ permissions:
   repository-projects: read
     
 jobs:
-  label-publish:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo

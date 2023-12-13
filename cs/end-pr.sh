@@ -1,6 +1,19 @@
 #!/bin/bash
 set -e
 
+do_merge="yes"
+if [ $# -gt 0 ]; then
+  if [ "$1" == "--no-merge" ]; then
+    do_merge="no"
+    shift
+  fi
+fi
+if [ $# -gt 0 ]; then
+  echo "$1 は指定できません"
+  exit 1
+fi
+
+
 if [ -r .env ]; then
   export $(cat .env | grep -v ^#)
 fi
@@ -49,13 +62,14 @@ if [ -z "$pr_url" ]; then
   echo "プリリクエストが作成されていません。"
   exit 1
 fi
+set +x
+if [ "$do_merge" == "no" ]; then
+  exit 0
+fi
+set -x
 # gh pr review "$pr_url" --approve
 gh pr merge --auto --delete-branch --squash "$pr_url"
-set +x
-# git checkout main
-# git pull $remote main
-# git branch -D "$current_branch"
 git fetch $remote --prune
-if [ $remote != 'upstream' ]; then
+if [ $remote == 'upstream' ]; then
   git push origin main
 fi

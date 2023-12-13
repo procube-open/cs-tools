@@ -29,23 +29,15 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           token: ${{ secrets.GITHUB_TOKEN }}
           # Defaults to the user or organization that owns the workflow file
-          scope: ${{ '@' + github.repository_owner }}
+          scope: ${{ '@' }}${{ github.repository_owner }}
       - name: Get package name to be released
         id: get-name
         run: node -e "console.log('name=' + require('./package.json').name)" >> "$GITHUB_OUTPUT"
       - name: Get version to be released
         id: get-version
         run: node -e "console.log('version=' + require('./package.json').version)" >> "$GITHUB_OUTPUT"
-      - name: Check if the image for the version is already pushed
-        id: versions
-        run: |
-          echo "versions='$(yarn info $NAME --json versions)'" >> "$GITHUB_OUTPUT"
-        env:
-          NAME: ${{ steps.get-name.outputs.name }}
       - name: Publish npm package
-        if: >-
-          ${{steps.check-in-pre.outputs.pre == 0 &&
-          ! contains(fromJson(steps.versions.outputs.versions), steps.get-version.outputs.version)}}
+        if: ${{steps.check-in-pre.outputs.pre == 1 }}
         run: |
           yarn install --immutable --immutable-cache --check-cache
           echo "@${GITHUB_REPOSITORY_OWNER}:registry=https://npm.pkg.github.com" >> .npmrc
@@ -54,9 +46,7 @@ jobs:
         env:
           NPM_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Add Tag
-        if: >-
-          ${{steps.check-in-pre.outputs.pre == 0 &&
-          ! contains(fromJson(steps.versions.outputs.versions).data, steps.get-version.outputs.version)}}
+        if: ${{steps.check-in-pre.outputs.pre == 1 }}
         run: |
           git tag v${VERSION}
           git push --tags origin v${VERSION}

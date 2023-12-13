@@ -13,10 +13,6 @@ jobs:
   publish:
     name: Publish Container Image
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -25,15 +21,15 @@ jobs:
       - name: Check if changeset is in prerelease mode
         id: check-in-pre
         run: echo "pre=$(test -r .changeset/pre.json; echo $?)"  >> "$GITHUB_OUTPUT"
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
           cache: 'yarn'
           registry-url: 'https://npm.pkg.github.com'
           token: ${{ secrets.GITHUB_TOKEN }}
           # Defaults to the user or organization that owns the workflow file
-          # scope: '@YOUR-ORGANIZATION'
+          scope: ${{ '@' + github.repository_owner }}
       - name: Get package name to be released
         id: get-name
         run: node -e "console.log('name=' + require('./package.json').name)" >> "$GITHUB_OUTPUT"
@@ -52,9 +48,11 @@ jobs:
           ! contains(fromJson(steps.versions.outputs.versions), steps.get-version.outputs.version)}}
         run: |
           yarn install --immutable --immutable-cache --check-cache
+          echo "@${GITHUB_REPOSITORY_OWNER}:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
           yarn publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NPM_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Add Tag
         if: >-
           ${{steps.check-in-pre.outputs.pre == 0 &&

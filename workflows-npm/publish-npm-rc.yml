@@ -32,7 +32,7 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           token: ${{ secrets.GITHUB_TOKEN }}
           # Defaults to the user or organization that owns the workflow file
-          # scope: '@YOUR-ORGANIZATION'
+          scope: ${{ '@' + github.repository_owner }}
       - name: Get package name to be released
         id: get-name
         run: node -e "console.log('name=' + require('./package.json').name)" >> "$GITHUB_OUTPUT"
@@ -51,6 +51,8 @@ jobs:
           ! contains(fromJson(steps.versions.outputs.versions).data, steps.get-version.outputs.version)}}
         run: |
           yarn install --immutable --immutable-cache --check-cache
+          echo "@${GITHUB_REPOSITORY_OWNER}:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
           yarn publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NPM_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -5,6 +5,12 @@ if [ -r .env ]; then
   export $(cat .env | grep -v ^#)
 fi
 
+if git remote | grep -q 'upstream'; then
+  remote=upstream
+else
+  remote=origin
+fi
+
 function usage() {
     echo "以下の手順でご利用ください。"
     echo " 1. ./cs/start-pr.sh で main ブランチを同期後、プルリクエスト用ブランチを作成し、 Prerelease モードに入る"
@@ -36,7 +42,7 @@ version=$(node -e "console.log(require('./package.json').version)")
 git add -A
 git commit -m "commit for $version"
 git tag "v${version}"
-git push origin $current_branch
+git push $remote $current_branch
 set +x
 pr_url=$(gh pr status --jq .currentBranch.url --json url)
 if [ -n "$pr_url" ]; then

@@ -5,6 +5,12 @@ if [ -r .env ]; then
   export $(cat .env | grep -v ^#)
 fi
 
+if git remote | grep -q 'upstream'; then
+  remote=upstream
+else
+  remote=origin
+fi
+
 function usage() {
     echo "以下の手順でご利用ください。"
     echo " 1. ./cs/start-pr.sh でプルリクエスト用ブランチを作成し、 Prerelease モードに入る"
@@ -30,9 +36,9 @@ if [ "$current_branch" != "main" ]; then
   exit 1
 fi
 branch_name=${1:-$(date +pr-%y%m%d%H%M%S)}
-echo "main ブランチを pull します。"
-if ! git pull; then
-  echo "main ブランチの pull に失敗しました。 git コマンドのメッセージに従って解消してください。"
+echo "${remote}/main ブランチを pull します。"
+if ! git pull $remote main; then
+  echo "${remote}/main ブランチの pull に失敗しました。 git コマンドのメッセージに従って解消してください。"
   exit 1
 fi
 set -x

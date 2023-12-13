@@ -5,6 +5,12 @@ if [ -r .env ]; then
   export $(cat .env | grep -v ^#)
 fi
 
+if git remote | grep -q 'upstream'; then
+  remote=upstream
+else
+  remote=origin
+fi
+
 function usage() {
     echo "以下の手順でご利用ください。"
     echo " 1. ./cs/start-pr.sh でプルリクエスト用ブランチを作成し、 Prerelease モードに入る"
@@ -37,15 +43,19 @@ version=$(node -e "console.log(require('./package.json').version)")
 set -x
 git add -A
 git commit -m "commit for $version"
-git push origin $current_branch
+git push $remote $current_branch
 pr_url=$(gh pr status --jq .currentBranch.url --json url)
 if [ -z "$pr_url" ]; then
   echo "プリリクエストが作成されていません。"
   exit 1
 fi
-gh pr review "$pr_url" --approve
+# gh pr review "$pr_url" --approve
 gh pr merge --auto --delete-branch --squash "$pr_url"
-sleep 10
-git checkout main
-git pull origin main
-git branch -D $current_branch
+set +x
+# git checkout main
+# git pull $remote main
+# git branch -D "$current_branch"
+git fetch $remote --prune
+if [ $remote != 'upstream' ]; then
+  git push origin main
+fi

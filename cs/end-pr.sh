@@ -66,6 +66,7 @@ set +x
 if [ "$do_merge" == "no" ]; then
   exit 0
 fi
+sleep 2
 set -x
 # gh pr review "$pr_url" --approve
 gh pr merge --auto --delete-branch --squash "$pr_url"

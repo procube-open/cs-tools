@@ -63,7 +63,7 @@ jobs:
             type=semver,pattern={{ version }},value=${{ steps.get-version.outputs.version }}
             type=semver,pattern={{major}}.{{minor}},value=${{ steps.get-version.outputs.version }}
             type=semver,pattern={{major}},value=${{ steps.get-version.outputs.version }}
-            type=raw,value=latest,enable=false
+            type=raw,value=latest
       - name: Build and push Docker image
         if: >-
           ${{steps.check-in-pre.outputs.pre == 1 &&

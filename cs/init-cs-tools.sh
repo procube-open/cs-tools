@@ -21,7 +21,7 @@ function usage() {
 }
 
 set -x
-yarn add @changesets/cli
+yarn add -D @changesets/cli
 yarn changeset init
 mkdir -p .github/workflows
 rm -f .github/workflows/*

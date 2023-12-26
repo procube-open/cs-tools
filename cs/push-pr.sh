@@ -13,10 +13,10 @@ fi
 
 function usage() {
     echo "以下の手順でご利用ください。"
-    echo " 1. ./cs/start-pr.sh で main ブランチを同期後、プルリクエスト用ブランチを作成し、 Prerelease モードに入る"
-    echo " 2. ./cs/add.sh で変更内容ログを追加する（複数回実行可）"
-    echo " 3. ./cs/push-pr.sh でその内容を github.com にプッシュする（2.に戻ってから再度実行可）"
-    echo " 4. ./cs/end-pr.sh で Prerelease モードを終了し、マージし、 main ブランチに戻り、 pull し、プルリクエスト用ブランチを削除する（次の修正を行うときは1.から実行）"
+    echo " 1. yarn start-pr でプルリクエスト用ブランチを作成し、 Prerelease モードに入る"
+    echo " 2. yarn add-change で変更内容ログを追加する"
+    echo " 3. yarn push-pr でその内容を github.com にプッシュする"
+    echo " 4. yarn end-pr で Prerelease モードを終了し、マージし、 main ブランチに戻り、 pull し、プルリクエスト用ブランチを削除する"
 }
 
 if [ -z "$GH_TOKEN" ]; then

@@ -14,10 +14,10 @@ fi
 
 function usage() {
     echo "以下の手順でご利用ください。"
-    echo " 1. ./cs/start-pr.sh でプルリクエスト用ブランチを作成し、 Prerelease モードに入る"
-    echo " 2. ./cs/add.sh で変更内容ログを追加する"
-    echo " 3. ./cs/push-pr.sh でその内容を github.com にプッシュする"
-    echo " 4. ./cs/end-pr.sh で Prerelease モードを終了し、マージし、 main ブランチに戻り、 pull し、プルリクエスト用ブランチを削除する"
+    echo " 1. yarn start-pr でプルリクエスト用ブランチを作成し、 Prerelease モードに入る"
+    echo " 2. yarn add-change で変更内容ログを追加する"
+    echo " 3. yarn push-pr でその内容を github.com にプッシュする"
+    echo " 4. yarn end-pr で Prerelease モードを終了し、マージし、 main ブランチに戻り、 pull し、プルリクエスト用ブランチを削除する"
 }
 
 set -x

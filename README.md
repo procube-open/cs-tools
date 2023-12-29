@@ -70,11 +70,11 @@ cs-tools のコマンドの機能は以下の通り。
 1. Chnagesets Prerelease モードに入る
 
 ### yarn add-change
-
+以下のことを実行する。
 1. Changeset を追加する
 
 ### yarn push-pr
-
+以下のことを実行する。
 1. Changesets でリリース候補版(rc: release candidate)のバージョンを付与
 1. git に .changeset も含めて全てのファイルの変更を commit
 1. git にバージョン名でタグ付け
@@ -82,7 +82,7 @@ cs-tools のコマンドの機能は以下の通り。
 1. push-pr が初回実行である場合は、プルリクエストを作成
 
 ### yarn end-pr
-
+以下のことを実行する。
 1. Changesets Prerelease モードを終了
 1. Changesets でリリース版のバージョンを付与
 1. git に .changeset も含めて全てのファイルの変更を commit

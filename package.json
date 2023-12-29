@@ -16,5 +16,5 @@
     "workflows-*/*"
   ],
   "license": "MIT",
-  "packageManager": "yarn@3.6.3"
+  "packageManager": "yarn@1.22.21"
 }

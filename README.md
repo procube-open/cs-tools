@@ -11,7 +11,7 @@ Changesets と Github flow の組み合わせにおいては、その運用手�
 
 - github flow の手順で github.com を使用しているリポジトリが対象である
 - Github Packages の npm レジストリかコンテナレジストリに push するために利用する
-- 開発環境で node.js 16.x 以上および yarn 1系が利用可能である（yarn 3.x, 4.x では利用できないので注意が必要）
+- 開発環境で node.js 16.x 以上および yarn が利用可能である
 - デフォルトブランチのブランチ名が main である(デフォルトブランチのブランチ名が master になっている場合には対応していないので注意が必要)
 
 開発環境が fork したリポジトリで fork 元リポジトリにプルリクエストを出す場合も利用できる。
@@ -28,13 +28,22 @@ Changesets と Github flow の組み合わせにおいては、その運用手�
 
 ```mermaid
 graph TD;
-    A("スタート")-->B["編集※"]-->C["yarn start-pr"]-->D["デバッグ"]-->E{"単体テストOK?"}
+    A("スタート")-->B["編集※"]-->C["yarn start-pr"]-->D["修正・デバッグ"]-->E{"単体テストOK?"}
     E-->|"OK"| F["yarn add-change"]-->J["リリースメモ編集"]-->K{"編集内容確認?"}
-    K-->|"OK"|I["yarn push-pr"]-->G{"結合テストOK?"}
+    K-->|"OK"|I["yarn push-pr"]
+    I-->L("Github Actions により
+    RC版がパブリッシュされる")-->O("結合テスト")-->G{"結合テストOK?"}
     K-->|"NG"| J
     E-->|"NG"| D
-    G-->|"OK"| H["yarn end-pr"]-->|"修正要求発生"|C
+    G-->|"OK"| H["yarn end-pr"]
+    H-->M["Github Actions により
+    リリース版がパブリッシュされる"]
+    M-->N("本番運用")-->|"修正要求発生"|C
     G-->|"NG"| D
+    style C fill:#ffa23e
+    style F fill:#ffa23e
+    style I fill:#ffa23e
+    style H fill:#ffa23e
 ```
 ※ package.json の編集が Changesets の編集と競合したり、main ブランチを pull した際に競合が発生する場合があるので、推奨できない。ただし、ファイルを編集してしまうと yarn start-pr ができないというわけではない。
 

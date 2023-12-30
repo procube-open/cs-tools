@@ -176,7 +176,6 @@ git の commit メッセージと異なり、 markdown を使用して長文の�
 ```yarn push-pr``` を実行するとプルリクエストの追加、あるいはプルリクエストへのプッシュを行う。具体的には以下を実行する。
 1. Changesets でリリース候補版(rc: release candidate)のバージョンを付与
 1. git に .changeset も含めて全てのファイルの変更を commit
-1. git にバージョン名でタグ付け
 1. github.com にプッシュ
 1. push-pr が初回実行である場合は、プルリクエストを作成
 

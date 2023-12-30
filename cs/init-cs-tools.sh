@@ -24,5 +24,5 @@ set -x
 yarn add -D @changesets/cli
 yarn changeset init
 mkdir -p .github/workflows
-rm -f .github/workflows/*
+# rm -f .github/workflows/*
 cp -a node_modules/@procube/cs-tools/workflows-${CLASS}/* .github/workflows

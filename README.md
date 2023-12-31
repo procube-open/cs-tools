@@ -96,7 +96,12 @@ Your branch is up to date with 'origin/main'.
 ### パッケージマネージャ yarn で管理されていること
 
 リポジトリのルートディレクトリに package.json が配置されている必要がある。
-npm レジストリではなく、コンテナレジストリを管理する場合は、 [changesets のマニュアル](https://github.com/changesets/changesets/blob/main/docs/versioning-apps.md)に従って、以下のような package.json を作成すれば良い。
+
+#### npm レジストリ
+npm レジストリへのパブリッシュはGithub Actions から```yarn publish```を実行することで行うため、package.json の name プロパティの値は```@procube/cs-tools```のようにスコープを含めてレジストリに登録される名前になっていなければならない。
+
+#### コンテナレジストリ
+コンテナレジストリに push する場合は、 [changesets のマニュアル](https://github.com/changesets/changesets/blob/main/docs/versioning-apps.md)に従って、以下のような package.json を作成すれば良い。
 
 ```
 {
@@ -105,6 +110,8 @@ npm レジストリではなく、コンテナレジストリを管理する場�
   "version": "0.0.1"
 }
 ```
+
+このとき、 name 属性がコンテナレジストリのパッケージ名となる。現在のバージョンでは、レジストリは ghcr.io 固定である。
 
 ## 導入手順
 以下の手順で導入する。
@@ -193,3 +200,7 @@ git の commit メッセージと異なり、 markdown を使用して長文の�
 
 プルリクエストにマージされたことで、 Github Actions 上でワークフローが起動され、main ブランチにタグ付けが行われた後、リリース版がパブリッシュされる。
 
+## コンテナビルド時の秘密情報の参照
+
+コンテナイメージを push するリポジトリにおいて、ビルド時に秘密情報を参照する必要がある場合は、 ```.github/workflows/*.yml```の最後の行に build-args を追加しなければならない。
+ファイルにコメントアウトで記載されている build-args をアンコメントし、 Github の secrets の変数を参照することが推奨される。

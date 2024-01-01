@@ -33,7 +33,7 @@ jobs:
           echo "taglist=$(curl -H "Authorization: Bearer $(echo ${GITHUB_TOKEN} | base64)" https://ghcr.io/v2/${GITHUB_REPOSITORY}/tags/list)" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ steps.get-name.outputs.version }}
+          GITHUB_REPOSITORY: ${{ steps.get-name.outputs.name }}
       - name: Log in to Docker Hub
         if: >-
           ${{steps.check-in-pre.outputs.pre == 1 &&
@@ -59,7 +59,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: "ghcr.io/${{ steps.get-name.outputs.version }}"
+          images: "ghcr.io/${{ steps.get-name.outputs.name }}"
           flavor: |
             latest=false
           tags: |

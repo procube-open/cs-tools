@@ -34,7 +34,7 @@ jobs:
           echo "taglist=$(curl -H "Authorization: Bearer $(echo ${GITHUB_TOKEN} | base64)" https://ghcr.io/v2/${GITHUB_REPOSITORY}/tags/list)" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ steps.get-name.outputs.version }}
+          GITHUB_REPOSITORY: ${{ steps.get-name.outputs.name }}
       - name: Log in to Docker Hub
         if: >-
           ${{steps.check-in-pre.outputs.pre == 0 &&
@@ -52,7 +52,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ steps.get-name.outputs.version }}:${{ steps.get-version.outputs.version }}
+          tags: ghcr.io/${{ steps.get-name.outputs.name }}:${{ steps.get-version.outputs.version }}
           # 必要に応じて秘密情報を build-args を追加
           # build-args: |
           #   "XXX_KEY=${{ secrets.XXX_KEY }}"

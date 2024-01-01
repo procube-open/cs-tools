@@ -30,10 +30,10 @@ jobs:
       - name: Check if the image for the version is already pushed
         id: tag-list
         run: |
-          echo "taglist=$(curl -H "Authorization: Bearer $(echo ${GITHUB_TOKEN} | base64)" https://ghcr.io/v2/${GITHUB_REPOSITORY}/tags/list)" >> "$GITHUB_OUTPUT"
+          echo "taglist=$(curl -H "Authorization: Bearer $(echo ${GITHUB_TOKEN} | base64)" https://ghcr.io/v2/${GITHUB_REPOSITORY_OWNER}/${PACKAGE_NAME}/tags/list)" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ steps.get-name.outputs.name }}
+          PACKAGE_NAME: ${{ steps.get-name.outputs.name }}
       - name: Log in to Docker Hub
         if: >-
           ${{steps.check-in-pre.outputs.pre == 1 &&
@@ -59,7 +59,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: "ghcr.io/${{ steps.get-name.outputs.name }}"
+          images: "ghcr.io/${{ github.repository_owner }}/${{ steps.get-name.outputs.name }}"
           flavor: |
             latest=false
           tags: |

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+source $(dirname $0)/common.sh
+
 do_merge="yes"
 if [ $# -gt 0 ]; then
   if [ "$1" == "--no-merge" ]; then
@@ -12,8 +14,6 @@ if [ $# -gt 0 ]; then
   echo "$1 は指定できません"
   exit 1
 fi
-
-source ./common.sh
 
 if git remote | grep -q 'upstream'; then
   remote=upstream

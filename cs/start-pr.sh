@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 if git remote | grep -q 'upstream'; then
   remote=upstream

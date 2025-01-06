@@ -1,6 +1,6 @@
 name: Publish RC for Pull Request
 
-on: 
+on:
   pull_request:
     types: [opened, synchronize]
 
@@ -8,7 +8,7 @@ permissions:
   contents: write
   pull-requests: write
   packages: write
-    
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -41,6 +41,6 @@ jobs:
           echo "@${GITHUB_REPOSITORY_OWNER}:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
           yarn install --immutable --immutable-cache --check-cache
-          yarn publish
+          yarn publish --tag rc
         env:
           NPM_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

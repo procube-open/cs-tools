@@ -1,6 +1,6 @@
 name: Publish RC for Pull Request
 
-on: 
+on:
   pull_request:
     types: [opened, synchronize]
 
@@ -10,7 +10,7 @@ permissions:
   packages: write
   # workaround for https://github.com/cli/cli/issues/6274
   repository-projects: read
-    
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -28,26 +28,41 @@ jobs:
       - name: Get package name
         id: get-name
         run: node -e "console.log('name=' + require('./package.json').name)" >> "$GITHUB_OUTPUT"
-      - name: Check if the image for the version is already pushed
-        id: tag-list
+      - name: Check if the version is rc
+        id: check-rc
+        run: echo "rc=$(echo ${{ steps.get-version.outputs.version }} | grep -c rc)" >> "$GITHUB_OUTPUT"
+      - name: Error if the version is not rc
+        if: ${{steps.check-rc.outputs.rc == 0}}
         run: |
-          echo "taglist=$(curl -H "Authorization: Bearer $(echo ${GITHUB_TOKEN} | base64)" https://ghcr.io/v2/${GITHUB_REPOSITORY_OWNER}/${PACKAGE_NAME}/tags/list)" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PACKAGE_NAME: ${{ steps.get-name.outputs.name }}
+          echo "::error::The version ${{ steps.get-version.outputs.version }} is not a release candidate."
+          exit 1
       - name: Log in to Docker Hub
-        if: >-
-          ${{steps.check-in-pre.outputs.pre == 0 &&
-          ! contains(fromJson(steps.tag-list.outputs.taglist).tags, steps.get-version.outputs.version)}}
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check if the image for the version is already pushed
+        id: tag-exists
+        run: |
+          if docker manifest inspect ghcr.io/${GITHUB_REPOSITORY_OWNER}/${PACKAGE_NAME}:${PACKAGE_VERSION} > /dev/null 2>&1;   then
+            echo "Docker tag exists"
+            echo "tag_exists=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "Docker tag does not exist"
+            echo "tag_exists=0" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE_NAME: ${{ steps.get-name.outputs.name }}
+          PACKAGE_VERSION: ${{ steps.get-version.outputs.version }}
+      - name: Error if the image for the version is already pushed
+        if: ${{steps.tag-exists.outputs.tag_exists == 1}}
+        run: |
+          echo "::error::The image for the version ${{ steps.get-version.outputs.version }} is already pushed."
+          exit 1
       - name: Build and push Docker image
-        if: >-
-          ${{steps.check-in-pre.outputs.pre == 0 &&
-          ! contains(fromJson(steps.tag-list.outputs.taglist).tags, steps.get-version.outputs.version)}}
+        if: ${{steps.check-in-pre.outputs.pre == 0 && steps.tag-exists.outputs.tag_exists == 0 }}
         uses: docker/build-push-action@v5
         with:
           context: .

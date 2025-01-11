@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 if [ ! -r .changeset/pre.json ]; then
     echo "Preleaseモードに入っていません。"

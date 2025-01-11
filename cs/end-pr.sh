@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+source $(dirname $0)/common.sh
+
 do_merge="yes"
 if [ $# -gt 0 ]; then
   if [ "$1" == "--no-merge" ]; then

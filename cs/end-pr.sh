@@ -15,8 +15,6 @@ if [ $# -gt 0 ]; then
   exit 1
 fi
 
-source ./common.sh
-
 if git remote | grep -q 'upstream'; then
   remote=upstream
 else

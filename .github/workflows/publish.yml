@@ -23,9 +23,9 @@ jobs:
           scope: '@procube'
 
       - name: Install
-        run: yarn install
+        run: npm install
 
       - name: Publish npm package
-        run: yarn publish --access=public
+        run: npm publish --access=public
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

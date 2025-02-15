@@ -11,7 +11,7 @@ Changesets と Github flow の組み合わせにおいては、その運用手�
 
 - github flow の手順で github.com を使用しているリポジトリが対象である
 - Github Packages の npm レジストリかコンテナレジストリに push するために利用する
-- 開発環境で [Github CLI](https://cli.github.com/)、 [node.js 16.x 以上](https://nodejs.org/en)および [yarn](https://yarnpkg.com/) が利用可能である
+- 開発環境で [Github CLI](https://cli.github.com/)、 [node.js 16.x 以上](https://nodejs.org/en)および npx が利用可能である
 - デフォルトブランチのブランチ名が main である(デフォルトブランチのブランチ名が master になっている場合には対応していないので注意が必要)
 
 fork したリポジトリから fork 元リポジトリにプルリクエストを出す場合も利用できる。
@@ -28,14 +28,14 @@ fork したリポジトリから fork 元リポジトリにプルリクエスト
 
 ```mermaid
 graph TD;
-    A("スタート")-->B["編集※"]-->C["yarn start-pr"]-->D["修正・デバッグ"]-->E{"単体テストOK?"}
-    E-->|"OK"| F["yarn add-change"]-->J["リリースメモ編集"]-->K{"編集内容確認?"}
-    K-->|"OK"|I["yarn push-pr"]
+    A("スタート")-->B["編集※"]-->C["npx start-pr"]-->D["修正・デバッグ"]-->E{"単体テストOK?"}
+    E-->|"OK"| F["npx add-change"]-->J["リリースメモ編集"]-->K{"編集内容確認?"}
+    K-->|"OK"|I["npx push-pr"]
     I-->L("Github Actions により
     RC版がパブリッシュされる")-->O("結合テスト")-->G{"結合テストOK?"}
     K-->|"NG"| J
     E-->|"NG"| D
-    G-->|"OK"| H["yarn end-pr"]
+    G-->|"OK"| H["npx end-pr"]
     H-->M["Github Actions により
     リリース版がパブリッシュされる"]
     M-->N("本番運用")-->|"修正要求発生"|C
@@ -45,19 +45,19 @@ graph TD;
     style I fill:#ffa23e
     style H fill:#ffa23e
 ```
-※ package.json の編集が Changesets の編集と競合したり、main ブランチを pull した際に競合が発生する場合があるので、推奨できない。ただし、ファイルを編集してしまうと yarn start-pr ができないというわけではない。
+※ package.json の編集が Changesets の編集と競合したり、main ブランチを pull した際に競合が発生する場合があるので、推奨できない。ただし、ファイルを編集してしまうと npx start-pr ができないというわけではない。
 
 ## 前提となる環境
 
 ### 必要なソフトウェアがインストールされていること
 
-node.js, yarn, Github CLI, git がインストールされている必要がある。
+node.js, npm, Github CLI, git がインストールされている必要がある。
 以下のコマンドでバージョンが確認できればよい。バージョンは以下に表示されているものより上位であれば問題ない。
 ```
 $ node --version
 v18.18.2
-$ yarn --version
-1.22.21
+$ npm --version
+10.9.0
 $ gh --version
 gh version 2.40.1 (2023-12-13)
 https://github.com/cli/cli/releases/tag/v2.40.1
@@ -65,16 +65,11 @@ $ git --version
 git version 2.39.3
 ```
 
-#### node と yarn のインストール
+#### node と npm のインストール
 
-コンテナレジストリに対して使用する場合 node と yarn がインストールされていない場合があると思われるが、まず、以下のURLなどを参照してインストールしていただく必要がある。
+コンテナレジストリに対して使用する場合 node と npm がインストールされていない場合があると思われるが、まず、以下のURLなどを参照してインストールしていただく必要がある。
 
 https://nodejs.org/en/download/package-manager
-
-その後、以下のコマンドを実行して yarn をインストールしていただく必要がある。
-```
-npm install --global yarn
-```
 
 #### Github CLI のインストール
 
@@ -93,12 +88,12 @@ On branch main
 Your branch is up to date with 'origin/main'.
 ```
 
-### パッケージマネージャ yarn で管理されていること
+### パッケージマネージャ npm で管理されていること
 
 リポジトリのルートディレクトリに package.json が配置されている必要がある。
 
 #### npm レジストリ
-npm レジストリへのパブリッシュはGithub Actions から```yarn publish```を実行することで行うため、package.json の name プロパティの値は```@procube/cs-tools```のようにスコープを含めてレジストリに登録される名前になっていなければならない。
+npm レジストリへのパブリッシュはGithub Actions から```npm publish```を実行することで行うため、package.json の name プロパティの値は```@procube/cs-tools```のようにスコープを含めてレジストリに登録される名前になっていなければならない。
 
 #### コンテナレジストリ
 コンテナレジストリに push する場合は、 [changesets のマニュアル](https://github.com/changesets/changesets/blob/main/docs/versioning-apps.md)に従って、以下のような package.json を作成すれば良い。
@@ -115,8 +110,8 @@ npm レジストリへのパブリッシュはGithub Actions から```yarn publi
 
 ## 導入手順
 以下の手順で導入する。
-1. ```yarn add --dev @procube/cs-tools``` で cs-tools をインストール
-2. npm レジストリにリリースする場合は ```yarn init-cs-tools npm```、コンテナレジストリにリリースする場合は ```yarn init-cs-tools container-image``` で cs-tools と Changesets の設定を初期化
+1. ```npm install --save-dev --ignore-workspace-root-check @procube/cs-tools``` で cs-tools をインストール
+2. npm レジストリにリリースする場合は ```npx init-cs-tools npm```、コンテナレジストリにリリースする場合は ```npx init-cs-tools container-image``` で cs-tools と Changesets の設定を初期化
 3. Github パーソナルアクセストークンを取得して環境変数 GH_TOKEN に設定（リポジトリルートの .env に GH_TOKEN=XXX という形式で設定することも可）
 
 Github パーソナルアクセストークンの取得方法は[ここ](https://docs.github.com/ja/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic)を参照されたい。
@@ -126,21 +121,21 @@ Github パーソナルアクセストークンの取得方法は[ここ](https:/
 
 cs-tools のコマンドの機能は以下の通り。
 
-### yarn init-cs-tools
+### npx init-cs-tools
 
 手順 2. で.github/workflows にワークフロー定義ファイルが追加される。npm用とコンテナイメージ用で異なるものが追加される。
 
 
-### yarn start-pr
-```yarn start-pr``` を実行すると、プルリクエスト作成の準備を行う。具体的には以下のを実行する。
+### npx start-pr
+```npx start-pr``` を実行すると、プルリクエスト作成の準備を行う。具体的には以下のを実行する。
 1. 最新の状態からプルリクエストを作成するために mainブランチをpull
 1. 現在時刻に基づいて pr-%y%m%d%H%M%S フォーマットの名前のプルリクエスト用ブランチを作成
 1. Chnagesets Prerelease モードに入る
 
 ローカルリポジトリにプルリクエスト用ブランチがチェックアウトされた状態になる。
 
-### yarn add-change
-```yarn add-change``` を実行すると、修正レベルを設定してリリースメモを追加する。
+### npx add-change
+```npx add-change``` を実行すると、修正レベルを設定してリリースメモを追加する。
 
 実行時の
 ```
@@ -176,11 +171,11 @@ git の commit メッセージと異なり、 markdown を使用して長文の�
 🦋  If you want to modify or expand on the changeset summary, you can find it here
 🦋  info プロジェクトルートディレクトリ.changeset/XXXX-XXXX-XXXX.md
 ```
-と表示されるので、次の ```yarn push-pr``` を実行できる状態となる。
- ```yarn push-pr``` を実行される前にメッセージに表示されている .md ファイルのリリースメモをエディタで確認し、適宜修正することが推奨される。
+と表示されるので、次の ```npx push-pr``` を実行できる状態となる。
+ ```npx push-pr``` を実行される前にメッセージに表示されている .md ファイルのリリースメモをエディタで確認し、適宜修正することが推奨される。
 
-### yarn push-pr
-```yarn push-pr``` を実行するとプルリクエストの追加、あるいはプルリクエストへのプッシュを行う。具体的には以下を実行する。
+### npx push-pr
+```npx push-pr``` を実行するとプルリクエストの追加、あるいはプルリクエストへのプッシュを行う。具体的には以下を実行する。
 1. Changesets でリリース候補版(rc: release candidate)のバージョンを付与
 1. git に .changeset も含めて全てのファイルの変更を commit
 1. git にバージョン名でタグ付け
@@ -189,8 +184,8 @@ git の commit メッセージと異なり、 markdown を使用して長文の�
 
 プルリクエストにプッシュされたことで、 Github Actions 上でワークフローが起動され、リリース候補版がパブリッシュされる。
 
-### yarn end-pr
-```yarn end-pr``` を実行すると、プルリクエストをマージしてリリース版をパブリッシュする。具体的には以下のことを実行する。
+### npx end-pr
+```npx end-pr``` を実行すると、プルリクエストをマージしてリリース版をパブリッシュする。具体的には以下のことを実行する。
 1. Changesets Prerelease モードを終了
 1. Changesets でリリース版のバージョンを付与
 1. git に .changeset も含めて全てのファイルの変更を commit

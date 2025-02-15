@@ -21,8 +21,8 @@ if [ "$current_branch" == "main" ]; then
   exit 1
 fi
 set -x
-yarn changeset status
-yarn changeset version
+npx changeset status
+npx changeset version
 version=$(node -e "console.log(require('./package.json').version)")
 git add -A
 git commit -m "commit for $version"

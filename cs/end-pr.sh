@@ -33,8 +33,8 @@ if [ "$current_branch" == "main" ]; then
   exit 1
 fi
 set -x
-yarn changeset pre exit
-yarn changeset version
+npx changeset pre exit
+npx changeset version
 set +x
 version=$(node -e "console.log(require('./package.json').version)")
 set -x

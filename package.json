@@ -1,6 +1,6 @@
 {
   "name": "@procube/cs-tools",
-  "version": "2.0.1-rc.0",
+  "version": "2.0.1-rc.1",
   "description": "CI/CD Tools for changesets",
   "author": "Mitsuru Nakakawaji <mitsuru@procube.jp>",
   "bin": {

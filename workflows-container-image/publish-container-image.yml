@@ -52,14 +52,15 @@ jobs:
         run: |
           echo "::error::The image for the version ${{ steps.get-version.outputs.version }} is already pushed."
           exit 1
-      - name: Add Tag
-        if: >-
-          ${{steps.check-in-pre.outputs.pre == 1 && steps.tag-exists.outputs.tag_exists == 0 }}
-        run: |
-          git tag v${VERSION}
-          git push --tags origin v${VERSION}
-        env:
-          VERSION: ${{ steps.get-version.outputs.version }}
+      # changeset version does not update package.json of project root for monorepo 
+      # - name: Add Tag
+      #   if: >-
+      #     ${{steps.check-in-pre.outputs.pre == 1 && steps.tag-exists.outputs.tag_exists == 0 }}
+      #   run: |
+      #     git tag v${VERSION}
+      #     git push --tags origin v${VERSION}
+      #   env:
+      #     VERSION: ${{ steps.get-version.outputs.version }}
       - name: Extract metadata (tags, labels) for Docker
         if: >-
           ${{steps.check-in-pre.outputs.pre == 1 && steps.tag-exists.outputs.tag_exists == 0}}

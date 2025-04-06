@@ -15,4 +15,4 @@ if [ "$current_branch" == "main" ]; then
   exit 1
 fi
 set -x
-yarn changeset add
+npx changeset add

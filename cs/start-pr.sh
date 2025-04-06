@@ -28,4 +28,4 @@ if ! git pull $remote main; then
 fi
 set -x
 git checkout -b ${branch_name}
-yarn changeset pre enter rc
+npx changeset pre enter rc

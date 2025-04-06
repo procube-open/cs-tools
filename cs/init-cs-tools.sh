@@ -11,8 +11,8 @@ if [ "$CLASS" != "npm" -a "$CLASS" != "container-image" ]; then
 fi
 
 set -x
-yarn add -D @changesets/cli
-yarn changeset init
+npm add --ignore-workspace-root-check --save-dev @changesets/cli
+npx changeset init
 mkdir -p .github/workflows
 # rm -f .github/workflows/*
 cp -a node_modules/@procube/cs-tools/workflows-${CLASS}/* .github/workflows

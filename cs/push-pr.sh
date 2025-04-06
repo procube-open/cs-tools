@@ -26,7 +26,8 @@ npx changeset version
 version=$(node -e "console.log(require('./package.json').version)")
 git add -A
 git commit -m "commit for $version"
-git tag "v${version}"
+# changeset version does not update package.json of project root for monorepo 
+# git tag "v${version}"
 git push $remote $current_branch
 set +x
 pr_url=$(gh pr status --jq .currentBranch.url --json url)

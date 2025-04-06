@@ -45,10 +45,11 @@ jobs:
           npm publish
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Add Tag
-        if: ${{steps.check-in-pre.outputs.pre == 1 }}
-        run: |
-          git tag v${VERSION}
-          git push --tags origin v${VERSION}
-        env:
-          VERSION: ${{ steps.get-version.outputs.version }}
+      # changeset version does not update package.json of project root for monorepo 
+      # - name: Add Tag
+      #   if: ${{steps.check-in-pre.outputs.pre == 1 }}
+      #   run: |
+      #     git tag v${VERSION}
+      #     git push --tags origin v${VERSION}
+      #   env:
+      #     VERSION: ${{ steps.get-version.outputs.version }}
